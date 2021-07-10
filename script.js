@@ -1,5 +1,10 @@
+let toDoList;
 const addBtn = document.getElementById('addBtn');
 const taskTxt = document.getElementById('taskTxtBox');
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadLocalStorage();
+});
 
 taskTxt.addEventListener('keyup', (e) => {
     if(e.key === 'Enter')
@@ -8,8 +13,11 @@ taskTxt.addEventListener('keyup', (e) => {
 addBtn.addEventListener('click', addTask);
 
 function addTask() {
+    toDoList.push(taskTxt.value);
+
     createNewTask(taskTxt.value);
     taskTxt.value = '';
+    saveToLocalStorage();
 }
 
 function createNewTask(value) {
@@ -53,4 +61,22 @@ function deleteTask(event) {
     let delBtn = event.target.parentElement;
     delBtn.classList.toggle('deleted');
     delBtn.parentElement.remove();
+    let item = delBtn.parentElement.children[1].value;
+    toDoList.splice(toDoList.indexOf(item), 1);
+    saveToLocalStorage();
+}
+
+function loadLocalStorage() {
+    if( localStorage.getItem('toDoList') === null )
+        toDoList = [];
+    else {
+        toDoList = JSON.parse(localStorage.getItem('toDoList'));
+        toDoList.forEach(element => {
+            createNewTask(element);
+        });
+    }
+}
+
+function saveToLocalStorage() {
+    localStorage.setItem('toDoList', JSON.stringify(toDoList));
 }
